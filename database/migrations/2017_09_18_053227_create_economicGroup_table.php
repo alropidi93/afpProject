@@ -16,7 +16,7 @@ class CreateEconomicGroupTable extends Migration
         //
         Schema::create('EconomicGroup', function (Blueprint $table) {
           $table->increments('id');
-          $table->string('name',50)->unique();
+          $table->string('name',150)->unique();
           $table->text('description',50)->nullable();
 
 
@@ -27,7 +27,7 @@ class CreateEconomicGroupTable extends Migration
 
 
 
-      
+
 
 
         });
