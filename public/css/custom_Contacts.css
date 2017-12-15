@@ -1,0 +1,77 @@
+@media screen and (max-width: 600px) {
+	.g-recaptcha{
+		transform:scale(0.77);transform-origin:0 0;
+	}
+}
+
+@media (max-width: 600px) {
+.c-contact-h2{
+	font-size: 40px !important;
+}
+
+
+.c-carousel {
+	height: 665px !important;
+	width: 100% !important;
+}
+
+.c-image1-2 {
+	width: 500px !important;
+	height: 300px !important;
+	padding-top: 20px !important;
+	padding-bottom: 20px !important;
+	margin-right: -100px !important;
+}
+
+.c-image3 {
+	padding-top: 20px !important;
+	padding-bottom: 20px !important;
+	height: 600px !important;
+	margin-left: 50px;
+	width: 300px;
+}
+
+.c-images{
+	padding-top: 20px !important;
+	padding-bottom: 20px !important;
+	height: 600px !important;
+	margin-right: 50px;
+}
+
+.c-carousel-h1{
+	size: 50px;
+}
+
+.c-carousel-p{
+	size: 30px;
+}
+
+
+
+.c-section4{
+	background-color: #242529;
+
+}
+
+.c-footer{
+	color:white;
+	font-family:open sans;
+	font-size: 15px;
+}
+
+.c-logo{
+	height: 30px;
+	width: 30px;
+}
+
+.c-title{
+	font-family: open sans;
+	color:white;
+}
+
+.c-nav-text{
+	font-family: open sans;
+	font-size: 15px;
+	color: white !important;
+	}
+}

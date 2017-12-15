@@ -1,0 +1,230 @@
+/*Center a div inside a div (superuseful)*/
+/*divs*/
+.outer {
+  width:100%;
+  /* Firefox */
+  display:-moz-box;
+  -moz-box-pack:center;
+  -moz-box-align:center;
+  /* Safari and Chrome */
+  display:-webkit-box;
+  -webkit-box-pack:center;
+  -webkit-box-align:center;
+  /* W3C */
+  display:box;
+  box-pack:center;
+  box-align:center;
+}
+
+.inner {
+  width:50%;
+}
+
+.padded-top {
+  padding-top: 100px;
+}
+
+.d-description-blood {
+  background-color: #CC5D33;
+  min-height: 200px;
+}
+
+.d-description-white {
+  min-height: 300px;
+}
+
+.d-description-border-blood-white {
+  background-image: -webkit-linear-gradient(100deg, #FFFFFF 50%, #CC5D33 50%);
+  min-height: 300px;
+}
+
+.d-description-border-white-blood {
+  background-image: -webkit-linear-gradient(260deg, #FFFFFF 50%, #CC5D33 50%);
+  min-height: 300px;
+}
+
+.d-description-border-blood-white-inverse {
+  background-image: -webkit-linear-gradient(260deg, #CC5D33 50%, #FFFFFF 50%);
+  min-height: 300px;
+}
+
+.d-description-border-white-blood-inverse {
+  background-image: -webkit-linear-gradient(100deg, #FFFFFF 50%, #CC5D33 50%);
+  min-height: 300px;
+}
+
+/*labels*/
+@media screen and (min-width: 480px) {
+  .l-title-base {
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #FFFFFF;
+    display: block;
+  }
+
+  .l-title-normal {
+    text-align: center;
+    font-size: 60px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #FFFFFF;
+    display: block;
+  }
+
+  .l-title-emphasis {
+    text-align: center;
+    font-size: 100px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #FFFFFF;
+    display: block;
+  }
+
+  .l-description {
+    font-size: 40px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #FFFFFF;
+    display: block;
+  }
+
+  .l-title-base-gray {
+    font-size: 40px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #77746F;
+    display: block;
+  }
+
+  .l-title-centered-blood {
+    text-align: center;
+    font-size: 80px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #CC5D33;
+    display: block;
+  }
+
+  .l-description-blood {
+    text-align: center;
+    font-size: 40px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #CC5D33;
+    display: block;
+  }
+
+  .l-normal-blood {
+    text-align: left;
+    font-size: 40px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #CC5D33;
+    display: block;
+  }
+
+  .l-simple-blood {
+    text-align: left;
+    font-size: 40px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #CC5D33;
+  }
+}
+
+@media (max-width: 480px) {
+  .l-title-base {
+    word-wrap: break-word;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #FFFFFF;
+    display: block;
+  }
+
+  .l-title-normal {
+    word-wrap: break-word;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #FFFFFF;
+    display: block;
+  }
+
+  .l-title-emphasis {
+    word-wrap: break-word;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #FFFFFF;
+    display: block;
+  }
+
+  .l-description {
+    word-wrap: break-word;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #FFFFFF;
+    display: block;
+  }
+
+  .l-title-base-gray {
+    word-wrap: break-word;
+    font-size: 20px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #77746F;
+    display: block;
+  }
+
+  .l-title-centered-blood {
+    word-wrap: break-word;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #CC5D33;
+    display: block;
+  }
+
+  .l-description-blood {
+    word-wrap: break-word;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #CC5D33;
+    display: block;
+  }
+
+  .l-normal-blood {
+    word-wrap: break-word;
+    text-align: left;
+    font-size: 20px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #CC5D33;
+    display: block;
+  }
+
+  .l-simple-blood {
+    word-wrap: break-word;
+    text-align: left;
+    font-size: 20px;
+    font-weight: bolder;
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    color: #CC5D33;
+  }
+}
+
+/*images*/
+.i-centered {
+  display:block;
+  margin:auto;
+}

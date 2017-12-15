@@ -1,0 +1,128 @@
+.navbar-leng{
+    font-size: 14px;
+    position: relative;
+    float: right;
+    padding: 9px 10px;
+    margin-top: 8px;
+    margin-right: 15px;
+    margin-bottom: 8px;
+}
+
+ .navbar-leng-pc{
+   font-size: 14px;
+   position: relative;
+   float: right;
+   padding: 9px 10px;
+   margin-top: 8px;
+   margin-right: 15px;
+   margin-bottom: 8px;
+   margin-left: 20px;
+ }
+
+.navbar-leng a, .navbar-leng-pc a{
+  color: white;
+  text-decoration: none;
+}
+.navbar-leng:hover, .navbar-leng-pc:hover{
+  cursor: pointer;
+}
+
+.navbar-leng a:hover, .navbar-leng-pc a:hover{
+  text-decoration: none;
+  text-decoration-color: none;
+  text-emphasis-style: none;
+
+}
+.navbar-leng span, .navbar-leng-pc span{
+  margin-left: 4px;
+  color: white;
+  font-size: 16px;
+  float: right;
+  display: block;
+}
+/*se necesita reparar la imagen dinamica*/
+.navbar-leng input[type="checkbox"] , .navbar-leng-pc input[type="checkbox"]{
+  display: none;
+}
+
+.navbar-leng label .icon-chevron-up, .navbar-leng-pc label .icon-chevron-up{
+  display: none;
+}
+
+
+.navbar-leng input[type="checkbox"]:checked + label .icon-chevron-up{
+  display: block;
+}
+.navbar-leng-pc input[type="checkbox"]:checked + label .icon-chevron-up {
+  display: block;
+}
+
+.navbar-leng input[type="checkbox"]:checked + label .icon-chevron-down{
+  display: none;
+}
+.navbar-leng-pc input[type="checkbox"]:checked + label .icon-chevron-down {
+  display: none;
+}
+/**/
+.navbar-leng:hover, .navbar-leng-pc:hover{
+  color: #a6a6a6;
+  border: 1px solid #a6a6a6;
+  margin-left: 19px;
+  margin-bottom: 7px;
+  margin-top: 7px;
+  margin-right: 14px;
+}
+
+
+.leng-logo{
+  margin: 4px;
+  width: 17px;
+  height: 17px;
+  float: left;
+}
+
+.submenu-leng{
+  display: none;
+}
+
+.submenu-leng ul{
+  right: 10px;
+  margin-top: 0;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 8px;
+  display: block;
+  position: absolute;
+  width: 200px;
+  z-index: 5;
+}
+
+.submenu-leng ul li{
+  list-style: none;
+}
+.submenu-leng ul li a{
+  display: block;
+  padding: 5px;
+}
+
+.submenu-leng ul li a:hover{
+  background: rgb(230, 230, 230);
+  color: #1a1a1a;
+  padding: 4px;
+  margin: 1px;
+  border-radius: 5px;
+
+}
+
+
+
+@media (min-width: 992px) {
+  .navbar-leng{
+    display: none;
+  }
+}
+
+@media (max-width: 992px){
+  .navbar-leng-pc{
+    display: none;
+  }
+}

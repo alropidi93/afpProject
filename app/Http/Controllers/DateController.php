@@ -111,7 +111,7 @@ class DateController extends Controller
     }
 
     public function intToMonth($num){
-    
+
       try {
         switch ($num) {
           case 1:
@@ -244,5 +244,50 @@ class DateController extends Controller
   //  */
     }
 
+    public function intersectionDateNum($d1,$d2,$d3,$d4){
+
+
+      //$today= date('Y-m-d');
+/*
+      $date1=$dates['date1'];  //emisorBegin
+      $date2=$dates['date2'];//podria ser null //emisorEnd
+      $date3=$dates['date3'];//afpBegin
+      $date4=$dates['date4'];//podria ser null //afpEnd
+
+*/
+      //$date2= DateTime::createFromFormat('y-m-d', $today);
+      //echo $date2."<br>";
+///*
+
+
+
+      $finded=TRUE;
+
+      if ($d2 >=$d3 && $d2<=$d4 ){
+        if ( $d1>=$d3)
+          $dateOne=$d1;
+        else $dateOne=$d3;
+        $dateTwo= $d2;
+      }
+      else if ($d2 >=$d4 && $d1<=$d4 ){
+        if($d3<=$d1)
+          $dateOne=$d1;
+        else $dateOne=$d3;
+          $dateTwo=$d4;
+
+      }
+      else $finded=FALSE;
+
+      if($finded) {
+          return array($dateOne,$dateTwo);
+
+
+      }
+      return null;
+
+
+
+  //  */
+    }
 
 }
