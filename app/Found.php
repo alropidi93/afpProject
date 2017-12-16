@@ -21,4 +21,12 @@ class Found extends Model
         return $this->hasMany('App\InvestmentRound','foundId','id');
 
     }
+
+    public function periods()
+    {
+      return $this->belongsToMany('App\Period','FoundXPeriod',
+                           'foundId','periodId')->using('App\FoundXPeriod')->withPivot(
+                               'operaciontransito');
+
+    }
 }

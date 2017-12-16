@@ -52,18 +52,25 @@ Route::get('/insertAfp',function(){
 
 });
 
-Route::get('/updateEmisor',function(){
-  if (($entrada = fopen('files/emisoresUpdate.csv','r')) !== FALSE)
+Route::get('/update',function(){
+  if (($entrada = fopen('files/cantidades.csv','r')) !== FALSE)
   {
     while (($data = fgetcsv($entrada ,1000, ',')) !==FALSE)
     {
       try {
 
+        $emisor=InvestmentRound::select('InvestmentRound.id')
+                ->where('Found.id','=',$data[1])
+                ->where('InvestedCompany.id','=',$data[2])
+                ->where('FinancialInstrument.id','=',$data[5])
+                ->where('InvestmentRound.year','=',$data[3])
+                ->where('InvestmentRound.month','=',$data[4])
+                ->get();
+        $id=$emisor['id'];
+        $inv=InvestmentRound::find($id);
 
-        $emisor=InvestedCompany::find($data[0]);
-
-        $emisor->scope=utf8_encode($data['1']);
-        $emisor->save();
+        $inv->operaciontransito=$data[0];
+        $inv->save();
       } catch (Exception $e) {
         return $e->getMessage();
 
@@ -975,7 +982,8 @@ Route::get('/luisa2',function(){
 
 Route::get('/extra1','ReportController@extra1');
 
-Route::get('/analisis','ReportController@analisis');
+Route::get('/analisisAcciones/{year}/{companyId}/{instrumentId}','ReportController@analisisAcciones');
+Route::get('/analisisBonos/{year}/{companyId}','ReportController@analisisBonos');
 
 Route::get('/hard1',function(){
 
