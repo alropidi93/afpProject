@@ -53,26 +53,35 @@ Route::get('/insertAfp',function(){
 });
 
 Route::get('/update',function(){
-  if (($entrada = fopen('files/cantidades.csv','r')) !== FALSE)
+  if (($entrada = fopen('cantidades.csv','r')) !== FALSE)
   {
     while (($data = fgetcsv($entrada ,1000, ',')) !==FALSE)
     {
       try {
 
-        $emisor=InvestmentRound::select('InvestmentRound.id')
-                ->where('Found.id','=',$data[1])
-                ->where('InvestedCompany.id','=',$data[2])
-                ->where('FinancialInstrument.id','=',$data[5])
+        $emisores=InvestmentRound::select('InvestmentRound.id')
+                ->where('InvestmentRound.foundId','=',$data[1])
+                ->where('InvestmentRound.companyId','=',$data[2])
+                ->where('InvestmentRound.financialinstrumentId','=',$data[5])
                 ->where('InvestmentRound.year','=',$data[3])
                 ->where('InvestmentRound.month','=',$data[4])
                 ->get();
-        $id=$emisor['id'];
-        $inv=InvestmentRound::find($id);
+        if ($emisores->count() != 0){
+          $id=$emisores[0]['id'];
 
-        $inv->operaciontransito=$data[0];
-        $inv->save();
+          $inv=InvestmentRound::find($id);
+
+          $inv->quantityinstrument=(int)($data[0]);
+
+          $inv->timestamps = false;
+
+          $inv->save();
+        }
+
+
+
       } catch (Exception $e) {
-        return $e->getMessage();
+          return $e->getMessage();
 
       }
 

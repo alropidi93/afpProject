@@ -909,6 +909,11 @@ class ReportController extends Controller
                         echo 'Ratio1Excel: '.$ratio1excel."<br>";
                         echo 'Ratio2Excel: '.$ratio2excel."<br>";
                         echo '===================================='."<br>"."<br>";
+
+                        $row = array ($monto,$cantidad,$precio,
+                                  $portafolioTotal,$portafolioAccBonos,$ratio1excel,$ratio2excel,
+                                  $ratio1,$ratio2,$ratio3,$ratio4);
+
                       }
                       catch(Exception $e){
                         echo "No se que pudo haber pasado"."<br>";
@@ -1112,6 +1117,10 @@ class ReportController extends Controller
                         echo 'Ratio1Excel: '.$ratio1excel."<br>";
                         echo 'Ratio2Excel: '.$ratio2excel."<br>";
                         echo '===================================='."<br>"."<br>";
+
+                        $row = array ($monto,$cantidad,$precio,
+                                  $portafolioTotal,$portafolioAccBonos,$ratio1excel,$ratio2excel,
+                                  $ratio1,$ratio2,$ratio3,$ratio4);
                       }
                       catch(Exception $e){
                         echo "No se que pudo haber pasado"."<br>";
