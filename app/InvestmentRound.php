@@ -9,7 +9,7 @@ class InvestmentRound extends Model
   protected $table = 'InvestmentRound';
   protected $primaryKey = 'id';
   protected $fillable = ['companyId', 'foundId', 'currencyId',
-  'financialinstrumentId', 'month','year','mount','mountPercent','orden_periodo'];
+  'financialinstrumentId', 'month','year','mount','mountPercent','orden_periodo','quantityinstrument'];
 
  protected $appends = ['year_month'];
 
