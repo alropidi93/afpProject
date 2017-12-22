@@ -22,6 +22,9 @@ use App\Found;
 use App\InvestmentRound;
 use App\FinancialInstrument;
 use App\Currency;
+use App\Period;
+use App\FoundXPeriod;
+
 use App\Http\Controllers\DateController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\DB;
@@ -66,6 +69,7 @@ Route::get('/update',function(){
                 ->where('InvestmentRound.year','=',$data[3])
                 ->where('InvestmentRound.month','=',$data[4])
                 ->get();
+
         if ($emisores->count() != 0){
           $id=$emisores[0]['id'];
 
@@ -91,6 +95,161 @@ Route::get('/update',function(){
   }
 
 });
+
+
+Route::get('/update2',function(){
+  if (($entrada = fopen('operaciontransito.csv','r')) !== FALSE)
+  {
+    while (($data = fgetcsv($entrada ,1000, ',')) !==FALSE)
+    {
+      try {
+        $year=($data['0']);
+        $month=($data['1']);
+        $foundId=($data['2']);
+        $operacion=($data['3']);
+
+        $period=Period::select('Period.id')
+                ->where('Period.year',$year)
+                ->where('Period.month',$month)
+                ->get();
+
+
+
+        if ($period->count() == 1){
+          $periodId=$period[0]['id'];
+
+          $fxp=FoundXPeriod::select('FoundXPeriod.id')
+                          ->where('FoundXPeriod.foundId','=',$foundId)
+                          ->where('FoundXPeriod.periodId','=',$periodId)
+                            ->get();;
+
+          if ($fxp->count() == 1){
+              $id=$fxp[0]['id'];
+              $fxpObj=FoundXPeriod::find($id);
+              $fxpObj->operaciontransito=$operacion;
+              $fxpObj->timestamps = false;
+              $fxpObj->save();
+
+          }
+
+        }
+
+
+
+      } catch (Exception $e) {
+          return $e->getMessage();
+
+      }
+
+
+    }
+    fclose($entrada);
+  }
+
+});
+
+Route::get('/update3',function(){
+  if (($entrada = fopen('accionestotalXPeriodo.csv','r')) !== FALSE)
+  {
+    while (($data = fgetcsv($entrada ,1000, ',')) !==FALSE)
+    {
+      try {
+        $year=($data['0']);
+        $month=($data['1']);
+        $foundId=($data['2']);
+        $accion=($data['3']);
+
+        $period=Period::select('Period.id')
+                ->where('Period.year',$year)
+                ->where('Period.month',$month)
+                ->get();
+
+
+
+        if ($period->count() == 1){
+          $periodId=$period[0]['id'];
+
+          $fxp=FoundXPeriod::select('FoundXPeriod.id')
+                          ->where('FoundXPeriod.foundId','=',$foundId)
+                          ->where('FoundXPeriod.periodId','=',$periodId)
+                            ->get();;
+
+          if ($fxp->count() == 1){
+              $id=$fxp[0]['id'];
+              $fxpObj=FoundXPeriod::find($id);
+              $fxpObj->accionestotales=$accion;
+              $fxpObj->timestamps = false;
+              $fxpObj->save();
+
+          }
+
+        }
+
+
+
+      } catch (Exception $e) {
+          return $e->getMessage();
+
+      }
+
+
+    }
+    fclose($entrada);
+  }
+
+});
+
+Route::get('/update4',function(){
+  if (($entrada = fopen('bonostotalXPeriodo.csv','r')) !== FALSE)
+  {
+    while (($data = fgetcsv($entrada ,1000, ',')) !==FALSE)
+    {
+      try {
+        $year=($data['0']);
+        $month=($data['1']);
+        $foundId=($data['2']);
+        $bono=($data['3']);
+
+        $period=Period::select('Period.id')
+                ->where('Period.year',$year)
+                ->where('Period.month',$month)
+                ->get();
+
+
+
+        if ($period->count() == 1){
+          $periodId=$period[0]['id'];
+
+          $fxp=FoundXPeriod::select('FoundXPeriod.id')
+                          ->where('FoundXPeriod.foundId','=',$foundId)
+                          ->where('FoundXPeriod.periodId','=',$periodId)
+                            ->get();;
+
+          if ($fxp->count() == 1){
+              $id=$fxp[0]['id'];
+              $fxpObj=FoundXPeriod::find($id);
+              $fxpObj->bonostotales=$bono;
+              $fxpObj->timestamps = false;
+              $fxpObj->save();
+
+          }
+
+        }
+
+
+
+      } catch (Exception $e) {
+          return $e->getMessage();
+
+      }
+
+
+    }
+    fclose($entrada);
+  }
+
+});
+
 
 Route::get('/insertEmisor',function(){
 
