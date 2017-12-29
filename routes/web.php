@@ -58,11 +58,13 @@ Route::get('/insertAfp',function(){
 Route::get('/update',function(){
   if (($entrada = fopen('cantidades.csv','r')) !== FALSE)
   {
+
     while (($data = fgetcsv($entrada ,1000, ',')) !==FALSE)
     {
+
       try {
 
-        $emisores=InvestmentRound::select('InvestmentRound.id')
+        $emisores=InvestmentRound::select('InvestmentRound.id','InvestmentRound.quantityinstrument')
                 ->where('InvestmentRound.foundId','=',$data[1])
                 ->where('InvestmentRound.companyId','=',$data[2])
                 ->where('InvestmentRound.financialinstrumentId','=',$data[5])
@@ -70,12 +72,15 @@ Route::get('/update',function(){
                 ->where('InvestmentRound.month','=',$data[4])
                 ->get();
 
+
+
         if ($emisores->count() != 0){
           $id=$emisores[0]['id'];
 
           $inv=InvestmentRound::find($id);
 
-          $inv->quantityinstrument=(int)($data[0]);
+
+          $inv->quantityinstrument=$data[0];
 
           $inv->timestamps = false;
 
@@ -84,7 +89,7 @@ Route::get('/update',function(){
 
 
 
-      } catch (Exception $e) {
+      } catch (\Exception $e) {
           return $e->getMessage();
 
       }
@@ -228,7 +233,7 @@ Route::get('/update4',function(){
           if ($fxp->count() == 1){
               $id=$fxp[0]['id'];
               $fxpObj=FoundXPeriod::find($id);
-              $fxpObj->bonostotales=$bono;
+              $fxpObj->bonostotalesnacionales=$bono;
               $fxpObj->timestamps = false;
               $fxpObj->save();
 
@@ -1155,7 +1160,7 @@ Route::get('/analisisBonos/{year}/{companyId}','ReportController@analisisBonos')
 
 Route::get('/hard1',function(){
 
-  $csv = fopen("hard1durante.csv", "w");
+  $csv = fopen("hard1despues.csv", "w");
   $date=new DateController();
 
   $matches = Afp::select('Functionary.name as functionary',
@@ -1214,8 +1219,7 @@ Route::get('/hard1',function(){
               ->orderBy('InvestmentRound.year')->orderBy('InvestmentRound.month')
               ->get();
 
-              $results= $results->where('year_month','>=',$fechaInicio)
-                                ->where('year_month','<=',$fechaFinal);
+              $results= $results->where('year_month','>',$fechaFinal);
                                   /*->where('year_month','>=',$fechaInicio)
                                     ->where('year_month','<=',$fechaFinal);*/
                                   // ->where('year_month','<',$fechaInicio);
@@ -1337,7 +1341,7 @@ Route::get('/reporte','ReportController@report');
 Route::get('/hard2',function(){
 
 
-  $csv = fopen("hard2durante.csv", "w");
+  $csv = fopen("hard2despues.csv", "w");
 
   $date=new DateController();
 
@@ -1423,9 +1427,7 @@ Route::get('/hard2',function(){
                   ->orderBy('InvestmentRound.month')
                   ->get();
 
-    $results= $results->where('year_month','>=',$filter1)
-                  ->where('year_month','<=',$filter2);
-
+    $results= $results->where('year_month','>',$filter2);
     /*->where('year_month','>=',$filter1)
                   ->where('year_month','<=',$filter2);*/
       //->where('year_month','<',$filter1);
@@ -1785,7 +1787,7 @@ Route::get('/hard2Instr',function(){
 Route::get('/hard3',function(){
 
 
-  $csv = fopen("hard3durante.csv", "w");
+  $csv = fopen("hard3antes.csv", "w");
 
   $date=new DateController();
 
@@ -1847,9 +1849,9 @@ Route::get('/hard3',function(){
 
   //echo $filter1."-". $results['year_month']."-".$filter2."<br>";
     //echo $results->count()."a<br>";
-    $results= $results->where('year_month','>=',$filter1)
-                  ->where('year_month','<=',$filter2);
+    $results= $results->where('year_month','<',$filter1);
     //echo $results->count()."<br>";
+
     //->where('year_month','>',$filter2);
     /*->where('year_month','>=',$filter1)
                   ->where('year_month','<=',$filter2);*/
@@ -2159,7 +2161,7 @@ Route::get('/hard3Instr',function(){
 
 Route::get('/hard4',function(){
 
-  $csv = fopen("hard4durante.csv", "w");
+  $csv = fopen("hard4despues.csv", "w");
 
   $date=new DateController();
   $matches=Afp::select('Functionary.name as functionaryName',
@@ -2248,8 +2250,7 @@ Route::get('/hard4',function(){
           ->orderBy('InvestmentRound.month')
           ->get();
 
-      $results= $results->where('year_month','>=',$filter1)
-                    ->where('year_month','<=',$filter2);
+      $results= $results->where('year_month','<',$filter1);
       //->where('year_month','>',$filter2);
       /*->where('year_month','>=',$filter1)
                     ->where('year_month','<=',$filter2);*/

@@ -175,7 +175,10 @@ class ReportController extends Controller
   }
 
   public function hard5(){
-    $csv = fopen("hard5durante.csv", "w");
+    //$csv = fopen("hard5antes.csv", "w");
+    //$csv = fopen("hard5durante.csv", "w");
+    $csv = fopen("hard5despues.csv", "w");
+
     $date=new DateController();
     $matches = Afp::select('Functionary.name as functionary',
                 'Afp.id as afpId',
@@ -197,7 +200,7 @@ class ReportController extends Controller
                                 and not ("FunctionaryXCompany"."endDate" is not null and "FunctionaryXAfp"."beginDate">"FunctionaryXCompany"."endDate") )
                                 or ("FunctionaryXAfp"."endDate" is  null and "FunctionaryXCompany"."endDate" is null))
                                 and "InvestedCompany"."scope"=\'Nacional\' and
-                                "FunctionaryXAfp"."position"=\'GERENTE LEGAL Y DE COMPLIANCE\''
+                                "FunctionaryXAfp"."position"=\'OFICIAL CUMPLIMIENTO NORMATIVO\''
               )->orderBy('Functionary.name')->get(); //->count()
               $c=0;
               foreach ($matches as $m) {
@@ -237,12 +240,13 @@ class ReportController extends Controller
                 ->get();
 
 
-                $results= $results->where('year_month','>=',$fechaInicio)
-                  ->where('year_month','<=',$fechaFinal);
-                /*->where('year_month','>=',$fechaInicio)
+                $results= $results->where('year_month','>',$fechaFinal);
+                //antes ->where('year_month','<',$fechaInicio);
+
+                /*durante ->where('year_month','>=',$fechaInicio)
                   ->where('year_month','<=',$fechaFinal);*/
-                // ->where('year_month','<',$fechaInicio);
-                //->where('year_month','>',$fechaFinal);
+
+                //despues ->where('year_month','>',$fechaFinal);
 
                 foreach ($results as $r) {
                   # code...
@@ -838,29 +842,21 @@ class ReportController extends Controller
 
 
 
-/*                    $results= InvestmentRound::join ('InvestedCompany','InvestedCompany.id', '=', 'InvestmentRound.companyId')
-                              ->join ('Found','Found.id', '=', 'InvestmentRound.foundId')
-                              ->join ('Afp','Afp.id', '=', 'Found.afpId')
-                              ->join ('FinancialInstrument','FinancialInstrument.id', '=', 'InvestmentRound.financialinstrumentId')
-                              ->where('Found.name','=',$fondos[$i])
-                              ->where( function ($query) {
-                                        $query->where('FinancialInstrument.id','=',7)//es constante
-                                              ->orWhere('FinancialInstrument.id','=',10);//es constante
-                                        })
-                              ->where('InvestmentRound.year','=',$year)
-                              ->where('InvestmentRound.month','=',$m)
-                              ->where('InvestedCompany.scope','=','Nacional')
-                              ->selectRaw('sum("InvestmentRound"."mount"*1000) as portafolioAcciones')->get();*/
 
 
                       $results= FoundXPeriod::join ('Found','Found.id', '=', 'FoundXPeriod.foundId')
                                 ->join ('Period','Period.id', '=', 'FoundXPeriod.periodId')
-
-                                ->where('Found.name','=',$fondos[$i])
+                                ->join ('Afp','Afp.id', '=', 'Found.afpId')
+                                ->where('Afp.id','=',$afps[$j])
                                 ->where('Period.year','=',$year)
                                 ->where('Period.month','=',$m)
+                                ->where( function ($query) {
+                                          $query->where('Found.name','like','%01%')
+                                                ->orWhere('Found.name','like','%02%')
+                                                ->orWhere('Found.name','like','%03%');
+                                          })
 
-                                ->selectRaw('"FoundXPeriod"."accionestotales" as portafolioAcciones')->get();
+                                ->selectRaw('sum("FoundXPeriod"."accionestotalesnacionales")*1000 as portafolioAcciones')->get();
 
                       if ($results->count()==0){
                         //echo "No hay el mes ".$m."\n";
@@ -877,96 +873,187 @@ class ReportController extends Controller
                           else {
                             //no es el mismo valor del que sale en el analisis de Percy, sale un valor algo menor, hay que ver por qué no calza
                             $portafolioAccBonos=$results[0]['portafolioacciones']; /* Activos administratos en inversiones locales (total)*/
+
                           }
 
                       }
                       else if ($results->count()>=1){
                           echo "Se encontró mas de un resultado al calcular Portafolio Total"."<br>";
                       }
-                      return $portafolioAccBonos;
+
 
 
 
                       //la otra opción para $portafolioTotal es obtener el resultado directamente desde el excel que uso Percy
-                      $results= InvestmentRound::join ('InvestedCompany','InvestedCompany.id', '=', 'InvestmentRound.companyId')
+                      $resultsFound = InvestmentRound::join ('InvestedCompany','InvestedCompany.id', '=', 'InvestmentRound.companyId')
                                 ->join ('Found','Found.id', '=', 'InvestmentRound.foundId')
                                 ->join ('Afp','Afp.id', '=', 'Found.afpId')
                                 ->join ('FinancialInstrument','FinancialInstrument.id', '=', 'InvestmentRound.financialinstrumentId')
                                 ->where('Found.name','=',$fondos[$i])
                                 ->where('InvestmentRound.year','=',$year)
                                 ->where('InvestmentRound.month','=',$m)
-                                ->selectRaw('sum("InvestmentRound"."mount"*1000) as portafoliototal
+                                ->selectRaw('sum("InvestmentRound"."mount"*1000) as portafolioTotal
                                 ')->get();
 
 
-                      if ($results->count()==0){
+                      $resultsAfp= InvestmentRound::join ('InvestedCompany','InvestedCompany.id', '=', 'InvestmentRound.companyId')
+                                ->join ('Found','Found.id', '=', 'InvestmentRound.foundId')
+                                ->join ('Afp','Afp.id', '=', 'Found.afpId')
+                                ->join ('FinancialInstrument','FinancialInstrument.id', '=', 'InvestmentRound.financialinstrumentId')
+                                ->join('Period', function($join) {
+                                  $join->on('Period.month','=','InvestmentRound.month')
+                                       ->on('Period.year','=','InvestmentRound.year');
+                                })
+                                ->join('FoundXPeriod', function($join) {
+                                  $join->on('FoundXPeriod.periodId', '=', 'Period.id')
+                                       ->on('FoundXPeriod.foundId','=','Found.id');
+                                })
+
+                                ->where('Afp.id','=',$afps[$j])
+                                ->where( function ($query) {
+                                          $query->where('Found.name','like','%1%')
+                                                ->orWhere('Found.name','like','%2%')
+                                                ->orWhere('Found.name','like','%3%');
+                                          })
+                                ->where('InvestmentRound.year','=',$year)
+                                ->where('InvestmentRound.month','=',$m)
+                                ->selectRaw('sum("InvestmentRound"."mount")*1000+ avg("FoundXPeriod"."operaciontransito")*1000 as portafoliototal'
+                                )
+                                ->groupBy('Afp.id')
+                                ->groupBy('FoundXPeriod.id')
+                                ->groupBy('FoundXPeriod.operaciontransito')
+                                ->get();
+
+                      $portafolioTotalAfp=0;
+                      foreach ($resultsAfp as $rafp) {
+
+                        $portafolioTotalAfp=$portafolioTotalAfp+$rafp['portafoliototal'];
+                      }
+
+                      if ($resultsAfp->count()==0|| $resultsFound->count()==0){
                         //echo "No hay el mes ".$m."\n";
                         //A portafoliototal falta restarle "operaciones en transito"
-                        $portafolioTotal=0; /*Activos administratos (total)*/
-
+                        $portafolioTotalAfp=0; /*Activos administratos (total)*/
+                        $portafolioTotalFound=0;
 
 
                       }
 
-                      if ($results->count()==1){
-                          if ($results[0]['portafoliototal']==null){
+                      if ($resultsFound->count()==1){
+                          if ($resultsFound[0]['portafoliototal']==null
+                              ){
                             //A portafoliototal falta restarle "operaciones en transito"
-                            $portafolioTotal=0; /*Activos administratos (total)*/
+
+                            $portafolioTotalFound=0;
                           }
                           else {
                             //A portafoliototal falta restarle "operaciones en transito"
-                            $portafolioTotal=$results[0]['portafoliototal']; /*Activos administratos (total)*/
+                            $portafolioTotalFound=$resultsFound[0]['portafoliototal']; /*Activos administratos (total)*/
 
-                            $portafolioTotal=$portafolioTotal+$operacionTransito*1000;
+                            $portafolioTotalFound=$portafolioTotalFound+$operacionTransito*1000;
+
+
+
                           }
 
                       }
-                      else if ($results->count()>=1){
+                      else if ($resultsAfp->count()>=1  || $resultsFound->count()>=1){
                           echo "Se encontró mas de un resultado al calcular Portafolio Total"."<br>";
+                      }
+
+                      $resultsAfpNac = InvestmentRound::join ('InvestedCompany','InvestedCompany.id', '=', 'InvestmentRound.companyId')
+                                ->join ('Found','Found.id', '=', 'InvestmentRound.foundId')
+                                ->join ('Afp','Afp.id', '=', 'Found.afpId')
+                                ->join ('FinancialInstrument','FinancialInstrument.id', '=', 'InvestmentRound.financialinstrumentId')
+                                ->join('Period', function($join) {
+                                  $join->on('Period.month','=','InvestmentRound.month')
+                                       ->on('Period.year','=','InvestmentRound.year');
+                                })
+                                ->join('FoundXPeriod', function($join) {
+                                  $join->on('FoundXPeriod.periodId', '=', 'Period.id')
+                                       ->on('FoundXPeriod.foundId','=','Found.id');
+                                })
+
+                                ->where('Afp.id','=',$afps[$j])
+                                ->where('InvestedCompany.scope','=','Nacional')
+                                ->where( function ($query) {
+                                          $query->where('Found.name','like','%1%')
+                                                ->orWhere('Found.name','like','%2%')
+                                                ->orWhere('Found.name','like','%3%');
+                                          })
+                                ->where('InvestmentRound.year','=',$year)
+                                ->where('InvestmentRound.month','=',$m)
+                                ->selectRaw('sum("InvestmentRound"."mount")*1000 as portafoliototalnac'
+                                )
+                                ->groupBy('Afp.id')
+                                ->get();
+
+                      if ($resultsAfpNac->count()==0){
+                        //echo "No hay el mes ".$m."\n";
+                        //no es el mismo valor del que sale en el analisis de Percy, sale un valor algo menor, hay que ver por qué no calza
+                        $portafolioTotalAfpNac=0; /* Activos administratos en inversiones locales (total)*/
+
+                      }
+
+                      if ($resultsAfpNac ->count()==1){
+                          if ($resultsAfpNac[0]['portafoliototalnac']==null){
+                            //no es el mismo valor del que sale en el analisis de Percy, sale un valor algo menor, hay que ver por qué no calza
+                            $portafolioTotalAfpNac=0; /* Activos administratos en inversiones locales (total)*/
+                          }
+                          else {
+                            //no es el mismo valor del que sale en el analisis de Percy, sale un valor algo menor, hay que ver por qué no calza
+                            $portafolioTotalAfpNac=$resultsAfpNac[0]['portafoliototalnac']; /* Activos administratos en inversiones locales (total)*/
+                          }
+
+                      }
+                      else if ($resultsAfpNac->count()>=1){
+                          echo "Se encontró mas de un resultado al calcular Portafolio Total por afp solo nacionales"."<br>";
                       }
 
 
                       if (is_null($cantidad)) $cantidad=0;
                       if (is_null($monto)) $monto=0;
                       if (is_null($afpTotal)) $afpTotal=0;
-                      if (is_null($portafolioTotal)) $portafolioTotal=0;
+                      if (is_null($portafolioTotalFound)) $portafolioTotalFound=0;
+                      if (is_null($portafolioTotalAfp)) $portafolioTotalAfp=0;
                       if (is_null($portafolioAccBonos)) $portafolioAccBonos=0;
+                      if (is_null($portafolioTotalAfpNac)) $portafolioTotalAfpNac=0;
 
                       try{
                         if ($cantidad>0) $precio=$monto/$cantidad;
                         else $precio=0;
 
-                        if ($portafolioTotal>0) $ratio1=$afpTotal/$portafolioTotal;
+                        if ($portafolioTotalAfp>0) $ratio1=$afpTotal/$portafolioTotalAfp;
                         else $ratio1=0;
 
-                        if ($portafolioTotal>0) $ratio2=$monto/$portafolioTotal;
+                        if ($portafolioTotalFound>0) $ratio2=$monto/$portafolioTotalFound;
                         else $ratio2=0;
 
-                        if ($portafolioTotal>0) $ratio3=$afpTotal/$portafolioTotal;
+                        if ($portafolioTotalAfpNac>0) $ratio3=$afpTotal/$portafolioTotalAfpNac;
                         else $ratio3=0;
 
                         if ($portafolioAccBonos>0)$ratio4=$afpTotal/$portafolioAccBonos;
                         else $ratio4=0;
 
-
+                        /*
                         if ($portafolioTotal>0)$ratio1excel=($monto/$portafolioTotal)*100;
                         else $ratio1excel=0;
 
                         if ($portafolioAccBonos>0)$ratio2excel=($monto/$portafolioAccBonos)*100;
-                        else $ratio2excel=0;
+                        else $ratio2excel=0;*/
 
 
                         echo 'Monto: '.$monto."<br>";
                         echo 'Cantidad: '.$cantidad."<br>";
                         echo 'Precio: '.$precio."<br>";
-                        echo 'Portafolio Total: '.$portafolioTotal."<br>";
+                        echo 'Portafolio Total: '.$portafolioTotalFound."<br>";
                         echo 'Portafolio Acciones o Bonos: '.$portafolioAccBonos."<br>";
-                        echo 'Ratio1Excel: '.$ratio1excel."<br>";
-                        echo 'Ratio2Excel: '.$ratio2excel."<br>";
+                        //echo 'Ratio1Excel: '.$ratio1excel."<br>";
+                        //echo 'Ratio2Excel: '.$ratio2excel."<br>";
                         echo '===================================='."<br>"."<br>";
 
                         $row = array ($monto,$cantidad,$precio,
-                                  $portafolioTotal,$portafolioAccBonos,$ratio1excel,$ratio2excel,
+                                  $portafolioTotalFound,$portafolioAccBonos,
                                   $ratio1,$ratio2,$ratio3,$ratio4);
                         fputcsv($csv, $row);
 
@@ -1085,7 +1172,7 @@ class ReportController extends Controller
                             ->selectRaw('sum("InvestmentRound"."mount")*1000 as monto,
                              sum("InvestmentRound"."quantityinstrument") as cantidad ')->get();
 
-                  return   $results;
+
                    if ($results->count()==0){
                      //echo "No hay el mes ".$m."\n";
                      $monto=0; /*Monto invertido en el activo por fondo de cada AFP */
@@ -1108,15 +1195,20 @@ class ReportController extends Controller
                    else if ($results->count()>=1){
                        echo "Se encontró mas de un resultado al calcular monto"."<br>";
                    }
-                
+
                    $results= FoundXPeriod::join ('Found','Found.id', '=', 'FoundXPeriod.foundId')
                              ->join ('Period','Period.id', '=', 'FoundXPeriod.periodId')
 
-                             ->where('Found.name','=',$fondos[$i])
+                             ->where('Afp.id','=',$afps[$j])
                              ->where('Period.year','=',$year)
                              ->where('Period.month','=',$m)
 
-                             ->selectRaw('"FoundXPeriod"."bonostotales" as portafolioAcciones')->get();
+                             ->where( function ($query) {
+                                       $query->where('Found.name','like','\'%1%\'')
+                                             ->orWhere('Found.name','like','\'%2%\'')
+                                             ->orWhere('Found.name','like','\'%3%\'');
+                                       })
+                             ->selectRaw('"FoundXPeriod"."bonostotalesnacionales"*1000 as portafolioAcciones')->get();
 
 
                     if ($results->count()==0){
@@ -1145,75 +1237,170 @@ class ReportController extends Controller
 
 
                       //la otra opción para $portafolioTotal es obtener el resultado directamente desde el excel que uso Percy
-                      $results= InvestmentRound::join ('InvestedCompany','InvestedCompany.id', '=', 'InvestmentRound.companyId')
+                      $resultsFound = InvestmentRound::join ('InvestedCompany','InvestedCompany.id', '=', 'InvestmentRound.companyId')
                                 ->join ('Found','Found.id', '=', 'InvestmentRound.foundId')
                                 ->join ('Afp','Afp.id', '=', 'Found.afpId')
                                 ->join ('FinancialInstrument','FinancialInstrument.id', '=', 'InvestmentRound.financialinstrumentId')
                                 ->where('Found.name','=',$fondos[$i])
                                 ->where('InvestmentRound.year','=',$year)
                                 ->where('InvestmentRound.month','=',$m)
-                                ->selectRaw('sum("InvestmentRound"."mount"*1000) as portafoliototal')->get();
+                                ->selectRaw('sum("InvestmentRound"."mount"*1000) as portafolioTotal
+                                ')->get();
 
 
+                      $resultsAfp= InvestmentRound::join ('InvestedCompany','InvestedCompany.id', '=', 'InvestmentRound.companyId')
+                                ->join ('Found','Found.id', '=', 'InvestmentRound.foundId')
+                                ->join ('Afp','Afp.id', '=', 'Found.afpId')
+                                ->join ('FinancialInstrument','FinancialInstrument.id', '=', 'InvestmentRound.financialinstrumentId')
+                                ->join('Period', function($join) {
+                                  $join->on('Period.month','=','InvestmentRound.month')
+                                       ->on('Period.year','=','InvestmentRound.year');
+                                })
+                                ->join('FoundXPeriod', function($join) {
+                                  $join->on('FoundXPeriod.periodId', '=', 'Period.id')
+                                       ->on('FoundXPeriod.foundId','=','Found.id');
+                                })
 
-                      if ($results->count()<=1){
-                          if ($results[0]['portafoliototal']==null){
+                                ->where('Afp.id','=',$afps[$j])
+                                ->where( function ($query) {
+                                          $query->where('Found.name','like','\'%1%\'')
+                                                ->orWhere('Found.name','like','\'%2%\'')
+                                                ->orWhere('Found.name','like','\'%3%\'');
+                                          })
+                                ->where('InvestmentRound.year','=',$year)
+                                ->where('InvestmentRound.month','=',$m)
+                                ->selectRaw('sum("InvestmentRound"."mount")*1000+ avg("FoundXPeriod"."operaciontransito")*1000 as portafoliototal'
+                                )
+                                ->groupBy('Afp.id')
+                                ->groupBy('FoundXPeriod.id')
+                                ->groupBy('FoundXPeriod.operaciontransito')
+                                ->get();
+
+                      $portafolioTotalAfp=0;
+                      foreach ($resultsAfp as $rafp) {
+
+                        $portafolioTotalAfp=$portafolioTotalAfp+$rafp['portafoliototal'];
+                      }
+
+                      if ($resultsAfp->count()==0|| $resultsFound->count()==0){
+                        //echo "No hay el mes ".$m."\n";
+                        //A portafoliototal falta restarle "operaciones en transito"
+                        $portafolioTotalAfp=0; /*Activos administratos (total)*/
+                        $portafolioTotalFound=0;
+
+
+                      }
+
+                      if ($resultsFound->count()==1){
+                          if ($resultsFound[0]['portafoliototal']==null
+                              ){
                             //A portafoliototal falta restarle "operaciones en transito"
-                            $portafolioTotal=0; /*Activos administratos (total)*/
+
+                            $portafolioTotalFound=0;
                           }
                           else {
                             //A portafoliototal falta restarle "operaciones en transito"
-                            $portafolioTotal=$results[0]['portafoliototal']; /*Activos administratos (total)*/
+                            $portafolioTotalFound=$resultsFound[0]['portafoliototal']; /*Activos administratos (total)*/
 
-                            $portafolioTotal=$portafolioTotal+$operacionTransito*1000;
+                            $portafolioTotalFound=$portafolioTotalFound+$operacionTransito*1000;
+
+
+
                           }
 
                       }
-                      else if ($results->count()>=1){
+                      else if ($resultsAfp->count()>=1  || $resultsFound->count()>=1){
                           echo "Se encontró mas de un resultado al calcular Portafolio Total"."<br>";
                       }
+
+
+
+                      $resultsAfpNac = InvestmentRound::join ('InvestedCompany','InvestedCompany.id', '=', 'InvestmentRound.companyId')
+                                ->join ('Found','Found.id', '=', 'InvestmentRound.foundId')
+                                ->join ('Afp','Afp.id', '=', 'Found.afpId')
+                                ->join ('FinancialInstrument','FinancialInstrument.id', '=', 'InvestmentRound.financialinstrumentId')
+                                ->join('Period', function($join) {
+                                  $join->on('Period.month','=','InvestmentRound.month')
+                                       ->on('Period.year','=','InvestmentRound.year');
+                                })
+                                ->join('FoundXPeriod', function($join) {
+                                  $join->on('FoundXPeriod.periodId', '=', 'Period.id')
+                                       ->on('FoundXPeriod.foundId','=','Found.id');
+                                })
+
+                                ->where('Afp.id','=',$afps[$j])
+                                ->where('InvestedCompany.scope','=','Nacional')
+                                ->where( function ($query) {
+                                          $query->where('Found.name','like','%1%')
+                                                ->orWhere('Found.name','like','%2%')
+                                                ->orWhere('Found.name','like','%3%');
+                                          })
+                                ->where('InvestmentRound.year','=',$year)
+                                ->where('InvestmentRound.month','=',$m)
+                                ->selectRaw('sum("InvestmentRound"."mount")*1000 as portafoliototalnac'
+                                )
+                                ->groupBy('Afp.id')
+                                ->get();
+
+                      if ($resultsAfpNac->count()==0){
+                        //echo "No hay el mes ".$m."\n";
+                        //no es el mismo valor del que sale en el analisis de Percy, sale un valor algo menor, hay que ver por qué no calza
+                        $portafolioTotalAfpNac=0; /* Activos administratos en inversiones locales (total)*/
+
+                      }
+
+                      if ($resultsAfpNac ->count()==1){
+                          if ($resultsAfpNac[0]['portafoliototalnac']==null){
+                            //no es el mismo valor del que sale en el analisis de Percy, sale un valor algo menor, hay que ver por qué no calza
+                            $portafolioTotalAfpNac=0; /* Activos administratos en inversiones locales (total)*/
+                          }
+                          else {
+                            //no es el mismo valor del que sale en el analisis de Percy, sale un valor algo menor, hay que ver por qué no calza
+                            $portafolioTotalAfpNac=$resultsAfpNac[0]['portafoliototalnac']; /* Activos administratos en inversiones locales (total)*/
+                          }
+
+                      }
+                      else if ($resultsAfpNac->count()>=1){
+                          echo "Se encontró mas de un resultado al calcular Portafolio Total por afp solo nacionales"."<br>";
+                      }
+
 
                       if (is_null($cantidad)) $cantidad=0;
                       if (is_null($monto)) $monto=0;
                       if (is_null($afpTotal)) $afpTotal=0;
-                      if (is_null($portafolioTotal)) $portafolioTotal=0;
+                      if (is_null($portafolioTotalFound)) $portafolioTotalFound=0;
+                      if (is_null($portafolioTotalAfp)) $portafolioTotalAfp=0;
                       if (is_null($portafolioAccBonos)) $portafolioAccBonos=0;
+                      if (is_null($portafolioTotalAfpNac)) $portafolioTotalAfpNac=0;
 
                       try{
                         if ($cantidad>0) $precio=$monto/$cantidad;
                         else $precio=0;
 
-                        if ($portafolioTotal>0) $ratio1=$afpTotal/$portafolioTotal;
+                        if ($portafolioTotalAfp>0) $ratio1=$afpTotal/$portafolioTotalAfp;
                         else $ratio1=0;
 
-                        if ($portafolioTotal>0) $ratio2=$monto/$portafolioTotal;
+                        if ($portafolioTotalFound>0) $ratio2=$monto/$portafolioTotalFound;
                         else $ratio2=0;
 
-                        if ($portafolioTotal>0) $ratio3=$afpTotal/$portafolioTotal;
+                        if ($portafolioTotalAfpNac>0) $ratio3=$afpTotal/$portafolioTotalAfpNac;
                         else $ratio3=0;
 
                         if ($portafolioAccBonos>0)$ratio4=$afpTotal/$portafolioAccBonos;
                         else $ratio4=0;
 
 
-                        if ($portafolioTotal>0)$ratio1excel=($monto/$portafolioTotal)*100;
-                        else $ratio1excel=0;
-
-                        if ($portafolioAccBonos>0)$ratio2excel=($monto/$portafolioAccBonos)*100;
-                        else $ratio2excel=0;
-
-
                         echo 'Monto: '.$monto."<br>";
                         echo 'Cantidad: '.$cantidad."<br>";
                         echo 'Precio: '.$precio."<br>";
-                        echo 'Portafolio Total: '.$portafolioTotal."<br>";
+                        echo 'Portafolio Total: '.$portafolioTotalFound."<br>";
                         echo 'Portafolio Acciones o Bonos: '.$portafolioAccBonos."<br>";
-                        echo 'Ratio1Excel: '.$ratio1excel."<br>";
-                        echo 'Ratio2Excel: '.$ratio2excel."<br>";
+                        //echo 'Ratio1Excel: '.$ratio1excel."<br>";
+                        //echo 'Ratio2Excel: '.$ratio2excel."<br>";
                         echo '===================================='."<br>"."<br>";
 
                         $row = array ($monto,$cantidad,$precio,
-                                  $portafolioTotal,$portafolioAccBonos,$ratio1excel,$ratio2excel,
+                                  $portafolioTotalFound,$portafolioAccBonos,
                                   $ratio1,$ratio2,$ratio3,$ratio4);
 
                         fputcsv($csv, $row);
